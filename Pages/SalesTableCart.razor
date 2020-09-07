@@ -1,18 +1,9 @@
 ﻿
 
 
-@*<h3>SalesTableCart</h3>*@
-@*<h1 class="alert">Lines     :    @salesTable.salesLines.Count</h1>*@
-
-
-@*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
-
 @if (salesTable.salesLines.Count > 0)
 {    /*prevent Douple click*/
-
-
     @*Back to top of page*@
-    @*style="position: fixed ;z-index: 100;"*@
     <form class="form-inline">
         <button type="button" class="btn-light rounded" @onclick="toggleCollapse">
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -32,14 +23,12 @@
 
         @*the invoice goes here*@
         <div class="row">
-
             @*side by side*@
             <div style="width: 100%; overflow: hidden;">
-                @*<div style="width: 600px; float: left;"> Left </div>*@
                 <div class="col-md-12" style="width: 600px; float: left;">
                     <div class="panel panel-default  border">
                         <div class="panel-heading  text-center  bg-light">
-                            <h5 class="panel-title"><strong>تفاصيل الطلب</strong></h5>
+                            <h5 class="panel-title"><strong>Order Details</strong></h5>
                         </div>
                         <div class="panel-body">
                             @if (salesTable.salesLines.Count > 0)
@@ -49,10 +38,10 @@
                                         <thead>
                                             <tr>
                                                 <td class="text-center"><strong> </strong></td>
-                                                <td class="text-center"><strong>المبلغ</strong></td>
-                                                <td class="text-center"><strong>السعر</strong></td>
-                                                <td class="text-center"><strong>الكمية</strong></td>
-                                                <td class="text-right"><strong>الصنف</strong></td>
+                                                <td class="text-center"><strong>Amount</strong></td>
+                                                <td class="text-center"><strong>Sales Price</strong></td>
+                                                <td class="text-center"><strong>QTY</strong></td>
+                                                <td class="text-right"><strong>Item</strong></td>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -74,7 +63,7 @@
 
                                                 <td class="text-center"><strong> </strong></td>
                                                 <td class="text-center"><strong>@salesTable.totalAmount.ToString("C")</strong></td>
-                                                <td class="text-center"><strong>الاجمالي</strong></td>
+                                                <td class="text-center"><strong>Total</strong></td>
                                                 <td class="text-center"><strong> </strong></td>
                                                 <td class="text-right"><strong> </strong></td>
 
@@ -87,7 +76,7 @@
                             else
                             {
                                 <div class="text-center">
-                                    <h6>السلة فارغة </h6>
+                                    <h6>Empty Cart</h6>
                                 </div>
                             }
                         </div>
@@ -100,22 +89,16 @@
                         <div class="col-xs-12 col-md-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading text-center bg-light">
-                                    <h5 class="panel-title">السداد</h5>
-                                    @*<div class="checkbox pull-right">
-                                            <label>
-                                                <input type="checkbox" />
-                                                Remember
-                                            </label>
-                                        </div>*@
+                                    <h5 class="panel-title">Payment</h5>
                                 </div>
                                 <div class="panel-body">
                                     <form role="form">
                                         <div class="form-group">
                                             <label for="cardNumber">
-                                                رقم البطاقة
+                                                Card Number
                                             </label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" id="cardNumber" placeholder="رقم البطاقة"
+                                                <input type="text" class="form-control" id="cardNumber" placeholder="Card Number"
                                                        required autofocus />
                                                 <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
                                             </div>
@@ -123,7 +106,7 @@
                                         <div class="row">
                                             <div class="form-inline ">
                                                 <label for="expityMonth">
-                                                    تاريخ الانتهاء
+                                                    Expiration Date
                                                 </label>
 
                                                 <input type="text" class="form-control " style="width:44px" id="expityMonth" placeholder="MM" required />
@@ -132,7 +115,7 @@
                                             <div class="col-xs-5 col-md-5 pull-right">
                                                 <div class="form-group">
                                                     <label for="cvCode">
-                                                        CV رمز
+                                                        CV  
                                                     </label>
                                                     <input type="password" class="form-control" id="cvCode" placeholder="CV" required />
                                                 </div>
@@ -142,7 +125,7 @@
                                 </div>
                             </div>
                             <div class="float-lg-right">
-                                <a href="http://www.jquery2dotnet.com" class="btn btn-success btn-lg  " role="button">اتمام السداد</a>
+                                <a href="http://www.jquery2dotnet.com" class="btn btn-success btn-lg  " role="button">Confirm payment</a>
                             </div>
 
                         </div>
@@ -174,7 +157,7 @@
 
 @code {
     //[Parameter]
-    public bool Collapse { get; set; } = true; // hide by default
+    public bool Collapse { get; set; } = true; // cart is collapsed by default 
 
     private SalesTable _salesTable;
     [Parameter]
@@ -189,7 +172,7 @@
         salesTable.salesLines.Remove(sl);
         salesTable.calcTotalAmount();
     }
-    
+
 
     public void toggleCollapse( )
     {
@@ -201,16 +184,10 @@
     public async Task saveToDataBaseAsync()
     {
         //https://www.yogihosting.com/aspnet-core-consume-api/
-        //CreateOrderAllDetails_Object4
-        //string url = "https://azurewebapplicationaxwsx20200208021227.azurewebsites.net/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
-        string url = "https://localhost:44379/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
-
-               // "salesTable=" + JsonConvert.SerializeObject(salesTable)
-               "&dataAreaNamejameel&userCurrentAppVersion=6666";
-
-        // SalesTable salesTable
         String dataAreaName = "jameel";
         string userCurrentAppVersion = "200";
+        //string url = "https://azurewebapplicationaxwsx20200208021227.azurewebsites.net/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
+        string url = "https://localhost:44379/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +"&dataAreaName="+ dataAreaName + "&userCurrentAppVersion="+ userCurrentAppVersion;
 
         using (var httpClient = new HttpClient())
         {
