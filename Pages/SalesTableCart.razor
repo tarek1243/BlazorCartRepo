@@ -152,27 +152,6 @@
 
         </div>
         @*the invoice goes here*@
-
-
-
-        @*moyasar*@
-        @*ميسر*@
-
-        @*<form class="form-inline hide" accept-charset="UTF-8" action="https://api.moyasar.com/v1/payments.html" method="POST">
-                <input type="hidden" name="callback_url" value="https://localhost:44346/counter" />
-                <input type="hidden" name="publishable_api_key" value="pk_test_r1APXNkoCgP1upfqhafRftPcEf89v5CbUSBQ7cXb" />
-                <input type="hidden" name="amount" value="@(salesTable.totalAmount * 100)" />
-                <input type="hidden" name="source[type]" value="creditcard" />
-                <input type="hidden" name="description" value="مشترياتك من نماء" />
-                <input type="text" name="source[name]" placeholder="الاسم" value="@salesTable.customerName" class="form-control mb-2 mr-sm-2" />
-                <input type="text" placeholder="جوال" @bind="salesTable.customerMobile" class="form-control mb-2 mr-sm-2" />
-                <input type="text" name="source[number]" placeholder="card number" value="4054331137335846" class="form-control mb-2 mr-sm-2" />
-                <input type="text" name="source[month]" placeholder="exp month" value="03" class="form-control mb-2 mr-sm-2" />
-                <input type="text" name="source[year]" placeholder="exp year" value="2023" class="form-control mb-2 mr-sm-2" />
-                <input type="text" name="source[cvc]" placeholder="cvc" value="258" class="form-control mb-2 mr-sm-2" />
-                <button type="submit" class="form-control btn-success">الدفع</button>
-            </form>*@
-
     </div>
 }
 
@@ -223,7 +202,7 @@
     {
         //https://www.yogihosting.com/aspnet-core-consume-api/
         //CreateOrderAllDetails_Object4
-        //string url = "https://azurewebapplicationaxws20200208021227.azurewebsites.net/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
+        //string url = "https://azurewebapplicationaxwsx20200208021227.azurewebsites.net/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
         string url = "https://localhost:44379/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
 
                // "salesTable=" + JsonConvert.SerializeObject(salesTable)
