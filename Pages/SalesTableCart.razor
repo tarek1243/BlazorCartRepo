@@ -1,0 +1,263 @@
+﻿
+
+
+@*<h3>SalesTableCart</h3>*@
+@*<h1 class="alert">Lines     :    @salesTable.salesLines.Count</h1>*@
+
+
+@*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
+
+@if (salesTable.salesLines.Count > 0)
+{    /*prevent Douple click*/
+
+
+    @*Back to top of page*@
+    @*style="position: fixed ;z-index: 100;"*@
+    <form class="form-inline">
+        <button type="button" class="btn-light rounded" @onclick="toggleCollapse">
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            <i class="fa fa-shopping-cart" style=" font-size: 20px"></i>
+            <span class='badge badge-warning' id='lblCartCount'>@salesTable.salesLines.Count</span>
+            @if (Collapse)
+            {
+                <i class="fas fa-angle-double-down mx-4" style="font-size:14px"></i>
+            }
+            else
+            {<i class="fas fa-angle-double-up mx-4" style="font-size:14px"> </i>}
+        </button>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        @*<span class='badge badge-warning' id='lblCartCount'>currentCount: @currentCount</span>*@
+    </form>
+    <div class="panel panel-default border @(Collapse ? "collapse" : "" )">
+
+        @*the invoice goes here*@
+        <div class="row">
+
+            @*side by side*@
+            <div style="width: 100%; overflow: hidden;">
+                @*<div style="width: 600px; float: left;"> Left </div>*@
+                <div class="col-md-12" style="width: 600px; float: left;">
+                    <div class="panel panel-default  border">
+                        <div class="panel-heading  text-center  bg-light">
+                            <h5 class="panel-title"><strong>تفاصيل الطلب</strong></h5>
+                        </div>
+                        <div class="panel-body">
+                            @if (salesTable.salesLines.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <td class="text-center"><strong> </strong></td>
+                                                <td class="text-center"><strong>المبلغ</strong></td>
+                                                <td class="text-center"><strong>السعر</strong></td>
+                                                <td class="text-center"><strong>الكمية</strong></td>
+                                                <td class="text-right"><strong>الصنف</strong></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (SalesLine sl in salesTable.salesLines)
+                                            {
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-danger mx-0 p-1" @onclick="@(() => removeItem(sl))">X</button>
+                                                    </td>
+                                                    <td class="text-center">@sl.lineAmount</td>
+                                                    <td class="text-center">@sl.item.salesPrice</td>
+
+                                                    <td class="text-center">@sl.qty</td>
+                                                    <td class="text-right">@sl.item.name</td>
+                                                </tr>
+                                            }
+
+                                            <tr>
+
+                                                <td class="text-center"><strong> </strong></td>
+                                                <td class="text-center"><strong>@salesTable.totalAmount.ToString("C")</strong></td>
+                                                <td class="text-center"><strong>الاجمالي</strong></td>
+                                                <td class="text-center"><strong> </strong></td>
+                                                <td class="text-right"><strong> </strong></td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <h6>السلة فارغة </h6>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="container border" style="margin-left: 620px;">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center bg-light">
+                                    <h5 class="panel-title">السداد</h5>
+                                    @*<div class="checkbox pull-right">
+                                            <label>
+                                                <input type="checkbox" />
+                                                Remember
+                                            </label>
+                                        </div>*@
+                                </div>
+                                <div class="panel-body">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label for="cardNumber">
+                                                رقم البطاقة
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="cardNumber" placeholder="رقم البطاقة"
+                                                       required autofocus />
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-inline ">
+                                                <label for="expityMonth">
+                                                    تاريخ الانتهاء
+                                                </label>
+
+                                                <input type="text" class="form-control " style="width:44px" id="expityMonth" placeholder="MM" required />
+                                                <input type="text" class="form-control " style="width:44px" id="expityYear" placeholder="YY" required />
+                                            </div>
+                                            <div class="col-xs-5 col-md-5 pull-right">
+                                                <div class="form-group">
+                                                    <label for="cvCode">
+                                                        CV رمز
+                                                    </label>
+                                                    <input type="password" class="form-control" id="cvCode" placeholder="CV" required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="float-lg-right">
+                                <a href="http://www.jquery2dotnet.com" class="btn btn-success btn-lg  " role="button">اتمام السداد</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        @*the invoice goes here*@
+
+
+
+        @*moyasar*@
+        @*ميسر*@
+
+        @*<form class="form-inline hide" accept-charset="UTF-8" action="https://api.moyasar.com/v1/payments.html" method="POST">
+                <input type="hidden" name="callback_url" value="https://localhost:44346/counter" />
+                <input type="hidden" name="publishable_api_key" value="pk_test_r1APXNkoCgP1upfqhafRftPcEf89v5CbUSBQ7cXb" />
+                <input type="hidden" name="amount" value="@(salesTable.totalAmount * 100)" />
+                <input type="hidden" name="source[type]" value="creditcard" />
+                <input type="hidden" name="description" value="مشترياتك من نماء" />
+                <input type="text" name="source[name]" placeholder="الاسم" value="@salesTable.customerName" class="form-control mb-2 mr-sm-2" />
+                <input type="text" placeholder="جوال" @bind="salesTable.customerMobile" class="form-control mb-2 mr-sm-2" />
+                <input type="text" name="source[number]" placeholder="card number" value="4054331137335846" class="form-control mb-2 mr-sm-2" />
+                <input type="text" name="source[month]" placeholder="exp month" value="03" class="form-control mb-2 mr-sm-2" />
+                <input type="text" name="source[year]" placeholder="exp year" value="2023" class="form-control mb-2 mr-sm-2" />
+                <input type="text" name="source[cvc]" placeholder="cvc" value="258" class="form-control mb-2 mr-sm-2" />
+                <button type="submit" class="form-control btn-success">الدفع</button>
+            </form>*@
+
+    </div>
+}
+
+
+
+
+
+@*payment styling*@
+<style>
+    .panel-title {
+        display: inline;
+        font-weight: bold;
+    }
+
+    .pl-ziro {
+        padding-left: 0px;
+    }
+</style>
+
+
+@code {
+    //[Parameter]
+    public bool Collapse { get; set; } = true; // hide by default
+
+    private SalesTable _salesTable;
+    [Parameter]
+    public SalesTable salesTable
+    {
+        get => _salesTable;
+        set => _salesTable = value;
+    }
+
+    public void removeItem(SalesLine sl)
+    {
+        salesTable.salesLines.Remove(sl);
+        salesTable.calcTotalAmount();
+    }
+    
+
+    public void toggleCollapse( )
+    {
+        Collapse = !Collapse;
+        StateHasChanged();
+    }
+
+
+    public async Task saveToDataBaseAsync()
+    {
+        //https://www.yogihosting.com/aspnet-core-consume-api/
+        //CreateOrderAllDetails_Object4
+        //string url = "https://azurewebapplicationaxws20200208021227.azurewebsites.net/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
+        string url = "https://localhost:44379/API/SalesOrder/CreateOrderAllDetails_ObjectWeb?" +
+
+               // "salesTable=" + JsonConvert.SerializeObject(salesTable)
+               "&dataAreaNamejameel&userCurrentAppVersion=6666";
+
+        // SalesTable salesTable
+        String dataAreaName = "jameel";
+        string userCurrentAppVersion = "200";
+
+        using (var httpClient = new HttpClient())
+        {
+            salesTable.salesID = DateTime.Now.ToOADate().ToString();
+            salesTable.userID_CreatedBy = 1;
+            salesTable.totalAmountWithVAT = 1;
+            salesTable.username_created_by = "1";
+            salesTable.App_Version = "1";
+            salesTable.atmNumber = "1";
+            salesTable.custGroup = "1";
+            salesTable.str_TK_InvoiceDate = DateTime.Now.ToShortDateString();
+
+            salesTable.salesTakerPersonnelNumber = "1";
+            salesTable.tkInvoiceDate_day = 1;
+            salesTable.tkInvoiceDate_month = 1;
+            salesTable.tkInvoiceDate_year = 2010;
+            salesTable.payment = "atm";
+            //salesTable.customerMobile = "0544444";
+            salesTable.fileByteArrayToString = "";
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(salesTable), System.Text.Encoding.UTF8, "application/json");
+            using (var response = await httpClient.PostAsync(url, content))
+            {
+                string apiResponse = await response.Content.ReadAsStringAsync();
+            }
+        }
+    }
+
+}

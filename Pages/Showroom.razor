@@ -1,0 +1,293 @@
+﻿@page "/{salesmanpersonnalnumber}"
+@page "/"
+@using Microsoft.AspNetCore.ProtectedBrowserStorage
+@using Blazored.Toast
+@using Blazored.Toast.Services
+
+
+
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IToastService toastService
+
+
+<BlazoredToasts />
+<SalesTableCart @ref="child_component_SalesTableCart" salesTable="@salesTable"></SalesTableCart>
+
+@if (loading)
+{<div>Loading......</div>}
+
+
+
+@*<button class="btn btn-info" @onclick="@(() => toastService.ShowInfo("I'm an INFO message"))">Info Toast</button>
+*@
+
+<div>
+    @*بحث*@
+    <div class="form-inline">
+        <br />
+        <br />
+        <br />
+        <input class="form-control my-2" @bind="str_filterItems" placeholder="Search Product" />
+        <button class="btn btn-success  my-2" @onclick="fill_item_List">Search</button>
+        <button class="btn btn-danger  mx-2" @onclick="ClearFilter">X</button>
+        <button class="btn btn-info  mx-2" @onclick="@(() =>setFilter("Category1"))">Category 1</button>
+        <button class="btn btn-info  mx-2" @onclick="@(() =>setFilter("Category2"))">Category 2</button>
+        @*<button class="btn btn-primary mx-2  my-2" @onclick="@Save">Save</button>*@
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<div class="row float-none">
+    @foreach (Item item in itemsListFiltered)
+    {
+        <div class="col-sm-3">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <img class="card-img"
+                         src="@item.imgURL_big"
+                         alt="Card image">
+                    <p class="card-text"> @item.name</p>
+                    <div class="card-title">السعر @item.salesPrice</div>
+
+                    <form class="form-inline">
+                        <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <button type="button" class="btn btn-primary mb-2" @onclick="() => addToCart(item, item.defaultQTY)">
+                                    <i class="fa" style="font-size: 12px">&#xf07a;</i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="العدد" @bind="item.defaultQTY">
+                        </div>
+                    </form>
+
+                    <div class="d-inline">
+                        @foreach (Item_Package ip in item.item_Packages)///btn btn-light rounded  loop for sub button
+                        {
+                            <button class="btn-secondary rounded" title="@ip.package_name" draggable="true" @onclick="() => addToCart(item, float.Parse(ip.package_value))">
+                                <i class="fa" style="font-size: 12px">@ip.package_name</i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+
+
+
+    [Parameter]
+    public string salesmanpersonnalnumber { get; set; }
+    SalesTableCart child_component_SalesTableCart;
+    bool loading = false;
+
+    string str_filterItems = "";
+    List<Item> itemsList = new List<Item>();
+    List<Item> itemsListFiltered = new List<Item>();
+
+
+    SalesTable salesTable = new SalesTable { };
+    private int? currentCount = 0;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (itemsListFiltered.Count == 0)
+        {
+            loading = true;
+            //fill anyway for now
+            fill_item_List();
+            // fill_item_List_SOS();
+
+            tkget();
+            this.StateHasChanged();
+            // return base.OnParametersSetAsync();
+        }
+        loading = false;
+    }
+
+    public async Task Save()
+    {
+        //  await child_component_SalesTableCart.saveToDataBaseAsync();
+    }
+
+    async Task<int?> tkset()
+    {
+        await ProtectedSessionStore.SetAsync("count", 0);
+        await ProtectedSessionStore.SetAsync("salesTable", salesTable);
+        currentCount = 0;
+        return 0;
+    }
+    async Task<int?> tkget()
+    {
+        currentCount = await ProtectedSessionStore.GetAsync<int?>("count");
+        salesTable = await ProtectedSessionStore.GetAsync<SalesTable>("salesTable");
+        if (salesTable == null)
+            salesTable = new SalesTable { customerMobile = "9665" };
+        if (currentCount == null)
+            currentCount = 0;
+        this.StateHasChanged();
+        return currentCount;
+    }
+
+
+
+
+    //https://www.yogihosting.com/aspnet-core-consume-api/
+    public async Task/*<List<Item>>*/ fill_item_List()
+    {
+        Item_FullGson resultItemList = new Item_FullGson();
+        resultItemList.itemsList = new List<Item>();
+
+        //retriving items from item service
+        //using (var httpClient = new HttpClient())
+        //{
+        //    using (var response = await httpClient.GetAsync("http://localhost/api/lists/GetAll_RevenueItems"))
+        //    {
+        //        //httpClient.PostAsync
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        resultItemList = JsonConvert.DeserializeObject<Item_FullGson>(apiResponse);
+        //    }
+        //}
+
+
+
+
+
+
+        string[] list_of_random_image_URLs = {
+
+            "https://image.freepik.com/free-psd/blank-black-long-sleeve-t-shirt-mock-up-template_34168-947.jpg",
+            "https://image.freepik.com/free-psd/front-back-grey-polo-mockup_34168-1099.jpg",
+"https://image.freepik.com/free-psd/white-t-shirt-mockup_110893-2113.jpg",
+"https://image.freepik.com/free-psd/black-t-shirts-mockup-front-back-used-as-design-template_34168-864.jpg",
+"", "https://image.freepik.com/free-psd/white-t-shirts-mockup-grey_34168-1032.jpg",
+"https://shirtsofcotton.com/en/media/catalog/product/cache/10/image/1200x1200/9df78eab33525d08d6e5fb8d27136e95/s/h/shirtsofcotton-t-shirt-soc-06-front-1200px.jpg",
+"https://d19rf3k3sr7wvs.cloudfront.net/catalog/product/cache/1/image/4137793dd7223b9146d9dcb53ced065c/p/a/pause_t1t_pact03181289_blk.jpg",
+            "https://ae01.alicdn.com/kf/HTB1ClpxqkKWBuNjy1zjq6AOypXa5/Liseaven-T-Shirt-Men-Cotton-T-Shirt-Full-Sleeve-tshirt-Men-Solid-Color-T-shirts-tops.jpg_640x640.jpg",
+"https://contents.mediadecathlon.com/p1277876/1ebac30f272d5fa61606fc032c849cc6/p1277876.jpg?f=650x650",
+            "https://contents.mediadecathlon.com/p1622177/f2b8ac99db8f6024a82d92e441e93bea/p1622177.jpg?f=650x650",
+
+        };
+
+
+
+
+        resultItemList.itemsList.AddRange(new List<Item> {
+                new Item { itemID="11001",name="item 1" , salesPrice=100 , isStopped=false ,  imgURL_big = list_of_random_image_URLs[new Random().Next(1, 4)]},
+                new Item { itemID="11002",name="item 2" , salesPrice=200 , isStopped=false ,  imgURL_big = list_of_random_image_URLs[new Random().Next(1, 4)]},
+                new Item { itemID="11003",name="item 3" , salesPrice=300 , isStopped=false ,  imgURL_big = list_of_random_image_URLs[new Random().Next(1, 4)]},
+                new Item { itemID="11004",name="item 4" , salesPrice=400 , isStopped=false ,  imgURL_big = list_of_random_image_URLs[new Random().Next(1, 4)]},
+                new Item { itemID="11005",name="item 5" , salesPrice=500 , isStopped=false ,  imgURL_big = list_of_random_image_URLs[new Random().Next(1, 4)]},
+
+        });
+
+
+        //appling multiple prices on  each   item
+        foreach (Item item in resultItemList.itemsList)
+        {
+            item.item_Packages.Add(new Item_Package { package_name = "x", package_value = new Random().Next(100, 1000).ToString() });
+            item.item_Packages.Add(new Item_Package { package_name = "y", package_value = new Random().Next(50, 100).ToString() });
+            item.item_Packages.Add(new Item_Package { package_name = "z", package_value = new Random().Next(2000, 10000).ToString() });
+        }
+
+
+        //itemsList = resultItemList.itemsList;
+        itemsListFiltered = resultItemList.itemsList.Where(item => item.name.Contains(str_filterItems)).ToList();
+        //return resultItemList.itemsList;
+
+        StateHasChanged();
+    }
+
+
+
+
+
+
+
+    public async void ClearFilter()
+    {
+        itemsListFiltered = new List<Item>();
+        str_filterItems = "";
+        await fill_item_List();
+
+        this.StateHasChanged();
+    }
+
+    public async Task setFilter(string newFilter)
+    {
+        itemsListFiltered = new List<Item>();
+        str_filterItems = newFilter;
+        await fill_item_List();
+
+        this.StateHasChanged();
+    }
+
+    public void addToCart(Item item, float quantity)
+    {
+        toastService.ShowSuccess("تمت الإضافة الى السلة", item.name);
+        List<SalesLine> isItemExistsInSalesLines = salesTable.salesLines.Where(sl => sl.item == item).ToList();
+        int index = salesTable.salesLines.FindIndex(sl => sl.item == item);
+        if (index == -1)//item does not exists
+        {
+            SalesLine sl = new SalesLine();
+            sl.item = item;
+            sl.qty = quantity;
+            sl.lineAmount = item.salesPrice * sl.qty;
+            salesTable.totalAmount += sl.lineAmount;
+            salesTable.salesLines.Add(sl);
+        }
+        else
+        {
+            salesTable.salesLines[index].qty += quantity;
+            salesTable.salesLines[index].lineAmount = item.salesPrice * salesTable.salesLines[index].qty;
+            salesTable.calcTotalAmount();
+            //salesTable.salesLines.Where(sl => sl.item == item).set .ToList()[0]=
+            //isItemExistsInSalesLines[0].
+        }
+        tkset();
+    }
+
+    class Source
+    {
+        public string type { get; set; }
+        public string name { get; set; }
+        public string number { get; set; }
+        public int cvc { get; set; }
+        public int month { get; set; }
+        public int year { get; set; }
+        public bool x3ds { get; set; }
+        public bool manual { get; set; }
+    }
+
+    /*
+     source
+ required 	string 	The type of payment source. Should be “”.
+ required 	string 	Card holder’s name.
+ required 	string 	The card number, as a string without any separators.
+ required 	integer 	Card security code.
+ required 	integer 	Two digit number representing the card’s expiration month.
+ required 	integer 	Two or Four digit number representing the card’s expiration year.
+ optional 	boolean 	Indicates whether the transaction to be performed is 3-D secure or direct normal SSL. (default is true).
+ optional 	boolean 	Indicates whether the transaction’s amount to be captured automaticly or manually. Manual payment need to captured after. (default is false).
+     */
+
+}
